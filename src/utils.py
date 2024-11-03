@@ -3,6 +3,7 @@ import pandas as pd
 import emoji
 import spacy
 import contractions
+import re
 
 
 # --------------------------------------------- FUNCTIONS
@@ -151,6 +152,8 @@ def split_into_sentences(reviews):
         for sent in doc.sents:
             sentences.append(sent.text)
     
+    print(sentences)
+
     return pd.Series(sentences)
 
 def lemmatize_text(text):
@@ -398,6 +401,12 @@ def clean_reviews(reviews, params):
     # remove k frequent words
     if params['most_frequent']>0:
         reviews = remove_frequent_words(reviews, params['most_frequent'])
+
+    # check for words concatenated by a '.' and split them
+    for index, review in reviews.items():
+        if re.search(r'\w+\.\w+', review):
+            corrected_review = re.sub(r'(\w+)\.(\w+)', r'\1. \2', review)
+            reviews.at[index] = corrected_review  
 
     return reviews
 

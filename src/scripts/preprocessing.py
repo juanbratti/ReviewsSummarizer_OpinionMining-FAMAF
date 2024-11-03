@@ -55,7 +55,8 @@ def load_and_preprocess_data(params):
         'nouns': params['nouns'],
         'adj': params['adj'],
         'numbers': params['numbers'],
-        'most_frequent': params['most_frequent']
+        'most_frequent': params['most_frequent'],
+        'tokens':params['tokens']
     }
     
     reviews_cleaned = clean_reviews(reviews_raw, params_clean_review)
@@ -89,11 +90,12 @@ def tokenize_reviews(reviews_cleaned, tokens, stopwords, lemmatization):
     # remove stopwords and lemmatize
     reviews_tokens = lemmatisation_stopwords_series(reviews_tokens, stopwords, lemmatization)
 
+    # remove empty rows
+    # reviews_tokens = reviews_tokens[reviews_tokens != '']
+
     # convertion of the tokenized series to a list of strings
     sequences_list = reviews_tokens.tolist()
 
-    
-    
     return sequences_list, reviews_tokens
 
 
