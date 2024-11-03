@@ -1,12 +1,14 @@
 import pandas as pd
 from scripts.preprocessing import load_and_preprocess_data, tokenize_reviews, vectorize_sequences
-from scripts.topic_modelling import apply_bertopic, visualize, print_model_info
+from scripts.topic_modelling import apply_bertopic, return_topic_sequences_csv, visualize, print_model_info
+from scripts.sentiment_analysis import sentiment_analysis
 
 def main():
 
     params = {
-        'new_reviews': 1,  # 0 for old reviews, 1 new reviews
+        'new_reviews': 0,  # 0 for old reviews, 1 new reviews
         'product_review_count': 40,
+        'tokens': 0,
         # delete?
         'nan': True, 
         'emojis': True,
@@ -25,7 +27,7 @@ def main():
 
     raw_dataset, reviews_cleaned = load_and_preprocess_data(params)
 
-    tokens = 0
+    tokens = params['tokens']
     # 0 to tokenize in sentences
     # n>0 to tokenize in n-grams
     print("-------------------------")
@@ -44,6 +46,12 @@ def main():
     print_model_info(topic_model, sequences_list, model)
 
     visualize(topic_model, sequences_list, model)
+
+    return_topic_sequences_csv(topic_model, sequences_series)
+
+    ######################TEXTBLOB############################
+    source = pd.read_csv('../data/processed/sequences_topics.csv')
+    sentiment_analysis(source)
 
 
 if __name__ == "__main__":

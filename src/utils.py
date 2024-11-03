@@ -366,9 +366,14 @@ def clean_reviews(reviews, params):
         reviews = reviews.str.strip().str.replace(r'\s+', ' ', regex=True)
 
     # remove special characters
-    #if params['special_chars']:
-    #    reviews = reviews.str.replace(r'[^\w\s.,!?]', '', regex=True)
-
+    if params['tokens'] > 0:
+        if params['special_chars']:
+            reviews = reviews.str.replace(r'[^a-zA-Z0-9\s]', '', regex=True)  
+            reviews = reviews.str.replace(r'\s*,\s*', ' ', regex=True)
+            reviews = reviews.str.replace(r',', '', regex=True) 
+    else:
+        if params['special_chars']:
+            reviews = reviews.str.replace(r'[^a-zA-Z0-9\s.,]', '', regex=True)
     # remove numbers
     if params['numbers']:
         reviews = reviews.str.replace(r'\d+', '', regex=True)

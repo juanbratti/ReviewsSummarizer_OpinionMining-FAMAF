@@ -4,6 +4,7 @@ from umap import UMAP
 from hdbscan import HDBSCAN
 from sklearn.feature_extraction.text import CountVectorizer
 from bertopic.vectorizers import ClassTfidfTransformer
+import pandas as pd
 
 def apply_bertopic(sequences, model, reduced_topics):
     """
@@ -70,3 +71,27 @@ def print_model_info(topic_model, sequences_list, model):
     
     print("-----------------------------------------")
     return
+
+def return_topic_sequences_csv(model, sequences_series):
+    # Obtener los IDs de los temas asignados durante el fit_transform
+    topic_ids = model.topics_
+
+    # Filtrar solo las secuencias con temas asignados (topic_id != -1)
+    filtered_sequences = []
+    filtered_topic_ids = []
+
+    for sequence, topic_id in zip(sequences_series, topic_ids):
+        if topic_id != -1:
+            filtered_sequences.append(sequence)
+            filtered_topic_ids.append(topic_id)
+
+    # Crear el DataFrame con las secuencias filtradas y sus topic_ids
+    result_df = pd.DataFrame({
+        'sequence': filtered_sequences,
+        'topic_id': filtered_topic_ids
+    })
+    
+    # Guardar el DataFrame en un archivo CSV
+    result_df.to_csv(f'../data/processed/sequences_topics.csv', index=False)
+
+    return result_df
