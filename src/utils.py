@@ -248,10 +248,10 @@ def filter_nouns_spacy(text_series):
         doc = nlp(review)
         
         # Filtrar palabras que no son sustantivos (pos_ == 'NOUN' para sustantivos)
-        nouns_adj = [token.text for token in doc if token.pos_ in ['NOUN', 'ADJ']]
+        non_nouns = [token.text for token in doc if token.pos_ != 'NOUN']
         
         # Unir las palabras filtradas en una cadena de texto
-        filtered_text.append(" ".join(nouns_adj))
+        filtered_text.append(" ".join(non_nouns))
     
     return pd.Series(filtered_text)
 
@@ -305,10 +305,10 @@ def filter_adjectives_spacy(text_series):
         doc = nlp(review)
       
         # Filtrar palabras que son adjetivos (pos_ == 'ADJ' para adjetivos)
-        adjectives = [token.text for token in doc if token.pos_ == 'ADJ']
+        non_adjectives = [token.text for token in doc if token.pos_ != 'ADJ']
        
         # Unir los adjetivos en una cadena de texto
-        filtered_text.append(" ".join(adjectives))
+        filtered_text.append(" ".join(non_adjectives))
    
     return pd.Series(filtered_text)
 
