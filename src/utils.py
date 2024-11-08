@@ -3,6 +3,7 @@ import pandas as pd
 import emoji
 import spacy
 import contractions
+import re
 
 
 # --------------------------------------------- FUNCTIONS
@@ -366,9 +367,15 @@ def clean_reviews(reviews, params):
         reviews = reviews.str.strip().str.replace(r'\s+', ' ', regex=True)
 
     # remove special characters
-    #if params['special_chars']:
-    #    reviews = reviews.str.replace(r'[^\w\s.,!?]', '', regex=True)
-
+    if params['tokens'] > 0:
+        if params['special_chars']:
+            reviews = reviews.str.replace(r'[^a-zA-Z0-9\s]', '', regex=True)  
+            reviews = reviews.str.replace(r'\s*,\s*', ' ', regex=True)
+            reviews = reviews.str.replace(r',', '', regex=True) 
+    else:
+        if params['special_chars']:
+            reviews = reviews.str.replace(r'([^.]*\S+@\S+[^.]*\.)', '', regex=True)
+            reviews = reviews.str.replace(r'[^a-zA-Z0-9\s.,]', '', regex=True)
     # remove numbers
     if params['numbers']:
         reviews = reviews.str.replace(r'\d+', '', regex=True)
@@ -376,11 +383,10 @@ def clean_reviews(reviews, params):
     # remove urls and email addresses
     if params['emails_and_urls']:
         reviews = reviews.str.replace(r'http\S+|www\S+|mailto:\S+', '', regex=True)
-        reviews = reviews.str.replace(r'\S+@\S+', '', regex=True) 
 
     # transform contractions
     if params['contractions']:
-        reviews = reviews.apply(contractions.fix)
+        reviews = reviews.apply(lambda x: contractions.fix(x) if isinstance(x, str) else x)
 
     # remove nouns
     if params['nouns']:
@@ -393,6 +399,12 @@ def clean_reviews(reviews, params):
     # remove k frequent words
     if params['most_frequent']>0:
         reviews = remove_frequent_words(reviews, params['most_frequent'])
+
+    # check for words concatenated by a '.' and split them
+    for index, review in reviews.items():
+        if re.search(r'\w+\.\w+', review):
+            corrected_review = re.sub(r'(\w+)\.(\w+)', r'\1. \2', review)
+            reviews.at[index] = corrected_review  
 
     return reviews
 
