@@ -63,6 +63,8 @@ def load_and_preprocess_data(params):
     }
     
     reviews_cleaned = clean_reviews(reviews_raw, params_clean_review)
+
+    reviews_cleaned = reviews_cleaned[reviews_cleaned.str.strip() != '']
     
     processed_dir = os.path.join(base_dir, '../../data/processed')
 
