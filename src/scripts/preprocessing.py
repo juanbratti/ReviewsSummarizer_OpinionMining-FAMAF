@@ -1,7 +1,8 @@
+import os
 import pandas as pd
-from utils import clean_reviews, map_lda_to_general_topic, get_product_with_n_reviews, lemmatisation_stopwords_series, split_into_sentences, tokenize_reviews_to_sequences
+from ..utils import clean_reviews, get_product_with_n_reviews, split_into_sentences, tokenize_reviews_to_sequences, lemmatisation_stopwords_series
 from sklearn.feature_extraction.text import CountVectorizer
-
+from .config import params
 
 ####################### DATA PREPROCESS #######################
 
@@ -22,11 +23,13 @@ def load_and_preprocess_data(params):
     """
     new_reviews = params['new_reviews']
 
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+
     if not new_reviews:
-        file_path = '../data/parsed_input_file.csv'
+        file_path = os.path.join(base_dir, '../../data/parsed_input_file.csv')        
         product_review_count = params['product_review_count']
     else:
-        file_path = '../data/parsed_input_file2.csv'
+        file_path = os.path.join(base_dir, '../../data/parsed_input_file2.csv')        
     
     # load of the dataset
     dataset = pd.read_csv(file_path)
@@ -60,12 +63,14 @@ def load_and_preprocess_data(params):
     }
     
     reviews_cleaned = clean_reviews(reviews_raw, params_clean_review)
+    
+    processed_dir = os.path.join(base_dir, '../../data/processed')
 
     # save the file to a csv
     if not new_reviews:
-        reviews_raw.to_csv(f'../data/processed/product_{product_id}_processed.csv', index=False)
+        reviews_cleaned.to_csv(os.path.join(processed_dir, f'size_{params["product_review_count"]}_processed.csv'), index=False)
     else: 
-        reviews_raw.to_csv(f'../data/processed/new_reviews_processed.csv', index=False)
+        reviews_cleaned.to_csv(os.path.join(processed_dir, 'new_reviews'), index=False)
 
     return dataset, reviews_cleaned
 
@@ -117,3 +122,10 @@ def vectorize_sequences(sequences_list):
     dtm = vectorizer.fit_transform(sequences_list)
 
     return vectorizer, dtm
+
+####################### MAIN #######################    
+def main():
+    load_and_preprocess_data(params)
+
+if __name__ == "__main__":
+    main()

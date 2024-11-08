@@ -152,8 +152,6 @@ def split_into_sentences(reviews):
         for sent in doc.sents:
             sentences.append(sent.text)
     
-    print(sentences)
-
     return pd.Series(sentences)
 
 def lemmatize_text(text):
@@ -376,6 +374,7 @@ def clean_reviews(reviews, params):
             reviews = reviews.str.replace(r',', '', regex=True) 
     else:
         if params['special_chars']:
+            reviews = reviews.str.replace(r'([^.]*\S+@\S+[^.]*\.)', '', regex=True)
             reviews = reviews.str.replace(r'[^a-zA-Z0-9\s.,]', '', regex=True)
     # remove numbers
     if params['numbers']:
@@ -384,11 +383,10 @@ def clean_reviews(reviews, params):
     # remove urls and email addresses
     if params['emails_and_urls']:
         reviews = reviews.str.replace(r'http\S+|www\S+|mailto:\S+', '', regex=True)
-        reviews = reviews.str.replace(r'\S+@\S+', '', regex=True) 
 
     # transform contractions
     if params['contractions']:
-        reviews = reviews.apply(contractions.fix)
+        reviews = reviews.apply(lambda x: contractions.fix(x) if isinstance(x, str) else x)
 
     # remove nouns
     if params['nouns']:

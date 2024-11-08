@@ -1,3 +1,4 @@
+import os
 from bertopic import BERTopic
 from sentence_transformers import SentenceTransformer
 from umap import UMAP
@@ -92,6 +93,8 @@ def return_topic_sequences_csv(model, sequences_series):
     })
     
     # Guardar el DataFrame en un archivo CSV
-    result_df.to_csv(f'../data/processed/sequences_topics.csv', index=False)
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    processed_dir = os.path.join(base_dir, '../../data/processed')
+    result_df.to_csv(os.path.join(processed_dir,'sequences_topics.csv'), index=False)
 
     return result_df
