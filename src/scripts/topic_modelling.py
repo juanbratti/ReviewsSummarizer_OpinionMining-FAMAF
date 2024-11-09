@@ -6,6 +6,10 @@ from hdbscan import HDBSCAN
 from sklearn.feature_extraction.text import CountVectorizer
 from bertopic.vectorizers import ClassTfidfTransformer
 import pandas as pd
+from wordcloud import WordCloud
+import math
+import matplotlib.pyplot as plt
+
 
 def apply_bertopic(sequences, model, reduced_topics):
     """
@@ -35,6 +39,8 @@ def apply_bertopic(sequences, model, reduced_topics):
     
     # similar_topics, similarity = topic_model.find_topics("price", top_n=5)
     # print(topic_model.get_topic(similar_topics[0]))
+
+    create_wordcloud_grid(topic_model)
 
     return topic_model
 
@@ -98,3 +104,34 @@ def return_topic_sequences_csv(model, sequences_series):
     result_df.to_csv(os.path.join(processed_dir,'sequences_topics.csv'), index=False)
 
     return result_df
+
+def create_wordcloud_grid(topic_model):
+    # Get all topics from the model
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    processed_dir = os.path.join(base_dir, '../images')
+
+    save_path = os.path.join(processed_dir, "wordcloud_grid.png")
+
+    topics = topic_model.get_topics().keys()
+    num_topics = len(topics)
+    
+    grid_size = math.ceil(math.sqrt(num_topics)) 
+    
+    fig, axes = plt.subplots(grid_size, grid_size, figsize=(15, 15))
+    fig.subplots_adjust(hspace=0.3, wspace=0.3)
+    
+    for idx, topic in enumerate(topics):
+        text = {word: value for word, value in topic_model.get_topic(topic)}
+        wc = WordCloud(background_color="white", max_words=1000)
+        wc.generate_from_frequencies(text)
+        
+        ax = axes[idx // grid_size, idx % grid_size]
+        ax.imshow(wc, interpolation="bilinear")
+        ax.set_title(f"Topic {topic}", fontsize=10)
+        ax.axis("off")
+    
+    for j in range(idx + 1, grid_size ** 2):
+        fig.delaxes(axes[j // grid_size, j % grid_size])
+    
+    plt.savefig(save_path, format="png")
+    plt.show()
