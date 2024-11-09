@@ -1,31 +1,18 @@
+import os
 import pandas as pd
-from scripts.preprocessing import load_and_preprocess_data, tokenize_reviews, vectorize_sequences
-from scripts.topic_modelling import apply_bertopic, visualize, print_model_info
+from .scripts.preprocessing import load_and_preprocess_data, tokenize_reviews, vectorize_sequences
+from .scripts.topic_modelling import apply_bertopic, return_topic_sequences_csv, visualize, print_model_info
+from .scripts.sentiment_analysis import sentiment_analysis
+from .scripts.config import params
 
 def main():
 
-    params = {
-        'new_reviews': 1,  # 0 for old reviews, 1 new reviews
-        'product_review_count': 40,
-        # delete?
-        'nan': True, 
-        'emojis': True,
-        'contractions': True,
-        'special_chars': True,
-        'whitespaces': True,
-        'stopwords': True,
-        'lemmatization': True,
-        'lowercase': True,
-        'emails_and_urls': True,
-        'nouns': False,
-        'adj': False,
-        'numbers': True,
-        'most_frequent': 0
-    }
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    processed_dir = os.path.join(base_dir, '../data/processed')
 
-    raw_dataset, reviews_cleaned = load_and_preprocess_data(params)
+    reviews_cleaned = pd.read_csv(os.path.join(processed_dir, f'size_{params['product_review_count']}_processed.csv'))['reviewText']
 
-    tokens = 0
+    tokens = params['tokens']
     # 0 to tokenize in sentences
     # n>0 to tokenize in n-grams
     print("-------------------------")
@@ -40,10 +27,15 @@ def main():
     # application of BERTopic  modeling
     topic_model = apply_bertopic(sequences_list, model, reduced_topics)
     
-
     print_model_info(topic_model, sequences_list, model)
 
-    visualize(topic_model, sequences_list, model)
+    # visualize(topic_model, sequences_list, model)
+
+    return_topic_sequences_csv(topic_model, sequences_series)
+
+    ######################TEXTBLOB############################
+    source = pd.read_csv(os.path.join(processed_dir,'sequences_topics.csv'))
+    sentiment_analysis(source)
 
 
 if __name__ == "__main__":
