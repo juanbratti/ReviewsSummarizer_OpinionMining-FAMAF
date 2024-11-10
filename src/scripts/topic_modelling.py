@@ -36,7 +36,7 @@ def apply_bertopic(sequences, model, reduced_topics):
     # similar_topics, similarity = topic_model.find_topics("price", top_n=5)
     # print(topic_model.get_topic(similar_topics[0]))
 
-    return topic_model
+    return topic_model, umap_model, embeddings, topics
 
 def visualize(topic_model, sequences_list, model):
     fig = topic_model.visualize_topics()
