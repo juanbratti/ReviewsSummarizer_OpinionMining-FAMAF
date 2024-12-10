@@ -3,8 +3,6 @@ import os
 import pandas as pd
 from transformers import pipeline
 
-os.environ["HUGGINGFACE_HUB_TOKEN"] = "KEY"
-
 def summary_gen():
     """
     Generate a summary of the topics and the sentiment analysis

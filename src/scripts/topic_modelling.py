@@ -42,6 +42,13 @@ def apply_bertopic(sequences, model, reduced_topics):
 
     create_wordcloud_grid(topic_model)
 
+    # create csv with the topic id and the words in the topic
+    topic_info = topic_model.get_topic_info()
+    topic_info_df = pd.DataFrame(topic_info)
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    processed_dir = os.path.join(base_dir, '../../data/processed')
+    topic_info_df.to_csv(os.path.join(processed_dir, 'topic_info.csv'), index=False)
+
     return topic_model
 
 def visualize(topic_model, sequences_list, model):
@@ -134,4 +141,3 @@ def create_wordcloud_grid(topic_model):
         fig.delaxes(axes[j // grid_size, j % grid_size])
     
     plt.savefig(save_path, format="png")
-    plt.show()
