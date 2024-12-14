@@ -40,6 +40,9 @@ def apply_bertopic(sequences, model, reduced_topics):
     # similar_topics, similarity = topic_model.find_topics("price", top_n=5)
     # print(topic_model.get_topic(similar_topics[0]))
 
+
+    
+
     create_wordcloud_grid(topic_model)
 
     # create csv with the topic id and the words in the topic
@@ -49,7 +52,7 @@ def apply_bertopic(sequences, model, reduced_topics):
     processed_dir = os.path.join(base_dir, '../../data/processed')
     topic_info_df.to_csv(os.path.join(processed_dir, 'topic_info.csv'), index=False)
 
-    return topic_model
+    return topic_model, umap_model, embeddings, topics
 
 def visualize(topic_model, sequences_list, model):
     fig = topic_model.visualize_topics()

@@ -12,7 +12,9 @@ def main():
     base_dir = os.path.dirname(os.path.abspath(__file__))
     processed_dir = os.path.join(base_dir, '../data/processed')
 
+
     reviews_cleaned = pd.read_csv(f"../data/processed/'size_{params['product_review_count']}_processed.csv")['reviewText']
+
 
     tokens = params['tokens']
     # 0 to tokenize in sentences
@@ -27,7 +29,7 @@ def main():
     model = "all-MiniLM-L6-v2"
     reduced_topics = 10
     # application of BERTopic  modeling
-    topic_model = apply_bertopic(sequences_list, model, reduced_topics)
+    topic_model, _, _, _ = apply_bertopic(sequences_list, model, reduced_topics)
     
     print_model_info(topic_model, sequences_list, model)
 
